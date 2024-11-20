@@ -1,0 +1,25 @@
+# Build directories
+/build/
+/bin/
+/CMakeFiles/
+CMakeCache.txt
+CMakeLists.txt.user
+
+# IDE files
+.vscode/
+.idea/
+*.suo
+*.user
+*.swp
+
+# System files
+Thumbs.db
+.DS_Store
+
+# Executables and other build artifacts
+*.exe
+*.out
+*.app
+*.dll
+*.so
+*.a
