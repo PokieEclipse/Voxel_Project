@@ -6,11 +6,11 @@
 #include <thread>
 #include <mutex>
 
-#include "../../../Core/World/world.h"
+#include "Core/World/world.h"
 
-#include "../../../Utility/Physics.h"
+#include "Utility/Physics.h"
 
-#include "../../../Utility/DebugDraw.h"
+#include "Utility/DebugDraw.h"
 
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"

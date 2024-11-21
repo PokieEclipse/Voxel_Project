@@ -2,6 +2,8 @@
 
 #include "glew.h"
 
+#include <iostream>
+
 Utility::Shader::Shader()
 {
 }
@@ -103,7 +105,7 @@ std::string Utility::ReadFromFile(const char* filePath)
 
 	}
 	catch (std::ifstream::failure e) {
-		std::cout << "ERROR FILE NOT READ" << std::endl;
+		std::cout << "ERROR FILE " << filePath << " NOT READ : " << std::endl;
 	}
 
 	return contents;

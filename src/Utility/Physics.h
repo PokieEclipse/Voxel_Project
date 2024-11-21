@@ -1,5 +1,5 @@
 #pragma once
-#include "../Core/World/world.h"
+#include "Core/World/world.h"
 
 namespace Physics {
 	

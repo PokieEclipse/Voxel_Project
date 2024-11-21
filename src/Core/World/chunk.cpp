@@ -4,7 +4,7 @@
 #include "gtc/matrix_transform.hpp"
 #include "gtc/type_ptr.hpp"
 
-#include "../../Utility/Camera.h"
+#include "Utility/Camera.h"
 
 #include "FastNoiseLite.h"
 
@@ -13,7 +13,7 @@
 
 #include <algorithm>
 
-#include "../../Utility/Debug.h"
+#include "Utility/Debug.h"
 
 extern Camera Utility::camera;
 extern glm::mat4 Utility::perspective;

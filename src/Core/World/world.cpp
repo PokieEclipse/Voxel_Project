@@ -1,5 +1,5 @@
 #include "world.h"
-#include "../game.h"
+#include "Core/game.h"
 
 #include "FastNoiseLite.h"
 
@@ -8,7 +8,7 @@
 #include <queue>
 #include <tuple>
 
-#include "../../Utility/Debug.h"
+#include "Utility/Debug.h"
 
 
 

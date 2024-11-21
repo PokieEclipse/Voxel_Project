@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../../../Utility/Camera.h"
+#include "Utility/Camera.h"
 
-#include "../../../Utility/Crosshair.h"
+#include "Utility/Crosshair.h"
 
-#include "../../World/block.h"
+#include "Core/World/block.h"
 
 #include <vector>
 

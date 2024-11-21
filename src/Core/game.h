@@ -35,10 +35,8 @@ public:
 	// Gets Screen Height
 	unsigned int GetScreenHeight() const { return HEIGHT; }
 
-	// Sets Screen Width
-	void SetScreenWidth(const unsigned int width) { WIDTH = width; }
-	// Sets Screen Height
-	void SetScreenHeight(const unsigned int height) { HEIGHT = height; }
+	// Sets screen size
+	void SetScreenSize(const unsigned int width, const unsigned int height);
 
 	// Gets a reference to the game window
 	GLFWwindow* GetGameWindow() const { return window; }
@@ -61,9 +59,6 @@ private:
 	bool shutdownState = false;
 
 	void LoadTextureAtlas();
-
-	void LoadTexturePack();
-	void ParseTextureJSON(const std::string filePath);
 
 	unsigned int textureAtlasID;
 

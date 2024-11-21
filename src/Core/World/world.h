@@ -7,7 +7,7 @@
 #include "chunk.h"
 #include "block.h"
 
-#include "../../Utility/Shader.h"
+#include "Utility/Shader.h"
 
 #include <thread>
 #include <mutex>
@@ -48,7 +48,7 @@ namespace Minecraft {
 
 		void UpdateNeighborChunk(glm::ivec3 neighborChunkCoords);
 
-		// Size of Chunk (eg. 16x16x16)
+		// Size of Chunk (eg. 16x256x16 or CHUNK_SIZE x CHUNK_HEIGHT x CHUNK_SIZE)
 		static const int CHUNK_SIZE = 16;
 		static const int CHUNK_HEIGHT = 256;
 

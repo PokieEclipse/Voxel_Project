@@ -4,13 +4,13 @@
 #include <fstream>
 #include <json.hpp>
 
-#include "../Utility/lodepng.h"
+#include "Utility/lodepng.h"
 
 #include "World/world.h"
 #include "World/chunk.h"
 #include "World/block.h"
 
-#include "../Utility/Camera.h"
+#include "Utility/Camera.h"
 
 #include "Entity/Player/Player.h"
 
@@ -100,6 +100,15 @@ void Game::ShutdownGame()
 	glfwSetWindowShouldClose(GetGameWindow(), true);
 }
 
+void Game::SetScreenSize(const unsigned int width, const unsigned int height)
+{
+	WIDTH = width;
+	HEIGHT = height;
+
+	Utility::perspective = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 10000.0f);
+	glViewport(0, 0, width, height);
+}
+
 void Game::ProcessInput(GLFWwindow* window)
 {
 	
@@ -144,31 +153,6 @@ void Game::LoadTextureAtlas()
 	}
 }
 
-void Game::LoadTexturePack()
-{
-	// TODO
-}
-
-void Game::ParseTextureJSON(const std::string filePath)
-{
-	std::ifstream inputFile(filePath);
-
-	if (inputFile.is_open())
-	{
-		nlohmann::json jsonData;
-		inputFile >> jsonData;
-
-		std::string blockDir = jsonData["parent"];
-
-		if (jsonData.contains("textures"))
-		{
-			if (jsonData["textures"].contains("all")) {
-
-			}
-		}
-	}
-}
-
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	extern Camera Utility::camera;
@@ -179,13 +163,7 @@ void ResizeWindowCallback(GLFWwindow* window, int width, int height)
 {
 	Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
 
-	Utility::perspective = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 10000.0f);
-
-	game->SetScreenWidth(width);
-	game->SetScreenHeight(height);
-
-	glViewport(0, 0, width, height);
-
+	game->SetScreenSize(width, height);
 }
 
 
