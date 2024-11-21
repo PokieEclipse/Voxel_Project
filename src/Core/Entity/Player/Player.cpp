@@ -12,9 +12,7 @@
 
 #include "Utility/DebugDraw.h"
 
-#include "imgui.h"
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+
 
 Minecraft::Player::Player(Minecraft::World* _world) : world(_world)
 {

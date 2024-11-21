@@ -1,8 +1,8 @@
 #include "Chunk.h"
 
-#include "glm.hpp"
-#include "gtc/matrix_transform.hpp"
-#include "gtc/type_ptr.hpp"
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 #include "Utility/Camera.h"
 
@@ -833,10 +833,10 @@ void Minecraft::Chunk::RenderVoxels()
 
 Minecraft::BlockData* Minecraft::Chunk::GetBlockAt(int x, int y, int z)
 {
-	ChunkGuard guard(this); // Ensure the guard locks the chunk
+	ChunkGuard guard(this);
 
 	{
-		std::lock_guard<std::mutex> lock(chunkLock); // Automatically unlocks when going out of scope
+		std::lock_guard<std::mutex> lock(chunkLock); 
 
 		auto Wrap = [](int coord, int size) {
 			return (coord % size + size) % size;
@@ -844,10 +844,10 @@ Minecraft::BlockData* Minecraft::Chunk::GetBlockAt(int x, int y, int z)
 
 		int index = GetIndex(Wrap(x % World::CHUNK_SIZE, World::CHUNK_SIZE), y, Wrap(z % World::CHUNK_SIZE, World::CHUNK_SIZE));
 		if (index < 0 || index >= blocks.size()) {
-			return nullptr; // Return nullptr if index is out of bounds
+			return nullptr; 
 		}
 		BlockData* block = &blocks[index];
-		return block; // No need to unlock explicitly; std::lock_guard handles that
+		return block; 
 	}
 }
 
@@ -855,16 +855,16 @@ Minecraft::BlockData* Minecraft::Chunk::GetBlockAt(glm::vec3 vec3) { return GetB
 
 Minecraft::BlockData* Minecraft::Chunk::GetBlockAt(int index)
 {
-	ChunkGuard guard(this); // Ensure the guard locks the chunk
+	ChunkGuard guard(this); 
 
 	{
 		std::lock_guard<std::mutex> lock(chunkLock);
 
 		if (index < 0 || index >= blocks.size()) {
-			return nullptr; // Return nullptr if index is out of bounds
+			return nullptr; 
 		}
 		BlockData* block = &blocks[index];
-		return block; // No need to unlock explicitly; std::lock_guard handles that
+		return block; 
 	}
 }
 

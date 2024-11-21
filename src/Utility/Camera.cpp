@@ -1,5 +1,5 @@
 #include "Camera.h"
-#include <glfw3.h>
+#include <glfw/glfw3.h>
 
 Camera::Camera()
 {

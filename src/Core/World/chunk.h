@@ -2,13 +2,13 @@
 
 #include <glew.h>
 
-#include <glm.hpp>
-#include <gtx/hash.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtx/hash.hpp>
 
 #include <unordered_map>
 #include <vector>
 
-#include "../game.h"
+#include "Core/game.h"
 
 #include "block.h"
 

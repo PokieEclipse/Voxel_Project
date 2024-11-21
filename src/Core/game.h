@@ -1,13 +1,13 @@
 #pragma once
 #include <glew.h>
-#include <glfw3.h>
+#include <glfw/glfw3.h>
 
 #include <string>
 
 #include <memory>
 
-#include <glm.hpp>
-#include <gtc/matrix_transform.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace Minecraft {
 	class World;

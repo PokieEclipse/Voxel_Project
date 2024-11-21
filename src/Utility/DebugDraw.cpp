@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-#include <glfw3.h>
+#include <glfw/glfw3.h>
 
 extern Camera Utility::camera;
 //extern glm::mat4 Utility::perspective;
