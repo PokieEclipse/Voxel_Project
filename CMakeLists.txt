@@ -6,11 +6,13 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Set the output directory for executables
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/Debug)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/Release)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL ${CMAKE_BINARY_DIR}/bin)
+
+message(STATUS ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
 
 # Add source files
 file(GLOB_RECURSE SOURCES "src/*.cpp")
@@ -25,7 +27,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE src include)
  find_package(OpenGL REQUIRED)
  target_link_libraries(${PROJECT_NAME} PRIVATE OpenGL::GL)
 
-# FetchContent for External Libraries
+ # FetchContent for External Libraries
 include(FetchContent)
 
 # GLEW
@@ -39,12 +41,12 @@ FetchContent_Declare(
     GIT_TAG master # Change to the latest stable version
     )
 
-    FetchContent_MakeAvailable(GLEW)
-    
-    target_include_directories(${PROJECT_NAME} PRIVATE ${glew_SOURCE_DIR}/include/GL)
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${glew_BINARY_DIR}/lib/Release/glew.lib)
+FetchContent_MakeAvailable(GLEW)
 
-    target_compile_definitions(${PROJECT_NAME} PRIVATE GLEW_STATIC)
+target_compile_definitions(${PROJECT_NAME} PRIVATE GLEW_STATIC)
+target_include_directories(${PROJECT_NAME} PRIVATE ${glew_SOURCE_DIR}/include/GL)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${glew_BINARY_DIR}/lib/Release/glew.lib)
+
     
 # GLFW
 
@@ -87,12 +89,34 @@ target_link_libraries(${PROJECT_NAME} PRIVATE assimp)
 # IMGUI (example setup with GLFW/GL3 backend)
 #
 
-# Shaders
+# Shaders and Textures
+
 file(GLOB SHADER_VERT_SOURCES "${CMAKE_SOURCE_DIR}/resources/shaders/*.vert")
 file(GLOB SHADER_FRAG_SOURCES "${CMAKE_SOURCE_DIR}/resources/shaders/*.frag")
-file(COPY ${SHADER_VERT_SOURCES} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/shaders)
-file(COPY ${SHADER_FRAG_SOURCES} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/shaders)
 
-# Textures
 file(GLOB TEXTURE_SOURCES "${CMAKE_SOURCE_DIR}/resources/textures/spritesheet/*.png")
-file(COPY ${TEXTURE_SOURCES} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/textures)
+
+
+#file(COPY ${SHADER_VERT_SOURCES} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/shaders)
+#file(COPY ${SHADER_FRAG_SOURCES} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/shaders)
+
+if(CMAKE_CONFIGURATION_TYPES) # Multi-config generator
+    # Multi-config generators (Visual Studio, Xcode)
+    foreach(config ${CMAKE_CONFIGURATION_TYPES})
+        string(TOUPPER ${config} CONFIG_UPPER)
+        file(COPY ${SHADER_VERT_SOURCES} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONFIG_UPPER}}/shaders)
+        file(COPY ${SHADER_FRAG_SOURCES} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONFIG_UPPER}}/shaders)
+
+        file(COPY ${TEXTURE_SOURCES} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONFIG_UPPER}}/textures)
+
+        message(STATUS "Copying shaders and textrures to ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_${CONFIG_UPPER}} for ${config} configuration.")
+    endforeach()
+else() # Single-config generator
+    # Single-config generators (Makefiles, Ninja)
+    file(COPY ${SHADER_VERT_SOURCES} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/shaders)
+    file(COPY ${SHADER_FRAG_SOURCES} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/shaders)
+    message(STATUS "Copying shaders to ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/shaders for ${CMAKE_BUILD_TYPE}.")
+endif()
+
+
+

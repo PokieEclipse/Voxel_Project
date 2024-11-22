@@ -149,27 +149,27 @@ void Minecraft::World::ManageChunks()
 			Chunk* chunk = chunksToGenerate.front();
 			chunksToGenerate.pop();
 
-			Utility::Timer timer("Generate World");
+			// Average of 0.2ms per chunk
 			chunk->GenerateChunk(chunk->chunkPosition.x * CHUNK_SIZE, 0, chunk->chunkPosition.z * CHUNK_SIZE);
-			timer.EndTimer();
 
-			Utility::Timer timerL("Lighting");
 			PropagateSunlight(chunk);
 
+			Utility::Timer timerL("Lighting");
 			chunk->PropagateLighting(this);
 			timerL.EndTimer();
 
 
+			//Utility::Timer timer("Generate World");
 			chunk->SetupVertices(this);
 			//chunk->ForceCPUVoxelSetup = true;
-			chunk->SetupBoardingChunkVertices(this);
+			//chunk->SetupBoardingChunkVertices(this);
+			//timer.EndTimer();
 
 			//chunk->SetupRenderFlag = true;
 			chunk->ChunkReady = true;
-
 			processedChunks++;
 
-			if (chunksToGenerate.empty() || processedChunks >= 15)
+			if (chunksToGenerate.empty() || processedChunks >= 50)
 			{
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));
 				processedChunks = 0;
@@ -181,12 +181,6 @@ void Minecraft::World::ManageChunks()
 		{
 			finishedThread = true;
 			return;
-		}
-
-		if (chunksToGenerate.empty() || processedChunks >= 20)
-		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(10));
-			processedChunks = 0;
 		}
 
 	}
@@ -278,20 +272,8 @@ void Minecraft::World::UnloadChunks(glm::vec3 playerPos)
 
 bool Minecraft::World::BlockExistsAt(int x, int y, int z)
 {
-	glm::vec3 chunkCoord = glm::vec3(floor((float)x / CHUNK_SIZE), floor((float)y / CHUNK_HEIGHT), floor((float)z / CHUNK_SIZE));
-
-	glm::vec3 LocalPos = glm::vec3(x, y, z);
-
-	BlockData* block = GetBlockAt(LocalPos.x, LocalPos.y, LocalPos.z);
-
-	if (block && block->blockType != BlockType::Air)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	BlockData* block = GetBlockAt(x, y, z);
+	return block && block->blockType != BlockType::Air;
 }
 
 bool Minecraft::World::BlockExistsAt(glm::ivec3 pos)

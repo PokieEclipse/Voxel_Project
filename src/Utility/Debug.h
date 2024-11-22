@@ -5,7 +5,7 @@
 
 namespace Utility {
 
-	// Says how much time a function has taken in milliseconds
+	// Outputs the amount of time a function has taken in milliseconds
 	struct Timer {
 
 		std::chrono::time_point<std::chrono::steady_clock> start, end;

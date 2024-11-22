@@ -14,12 +14,6 @@
 
 #include "Entity/Player/Player.h"
 
-extern Camera Utility::camera;
-
-namespace Utility {
-	glm::mat4 perspective = glm::perspective(glm::radians(120.0f), (float)1920 / (float)1080, 0.1f, 10000.0f);
-}
-
 Game::Game()
 {
 	Utility::perspective = glm::perspective(glm::radians(45.0f), (float)WIDTH / (float)HEIGHT, 0.1f, 10000.0f);
@@ -124,7 +118,7 @@ void Game::Update()
 	world->SetupChunks();
 
 	ProcessInput(window);
-	Utility::camera.UpdateCamera();
+	player->GetCameraReference().UpdateCamera();
 }
 
 void Game::LoadTextureAtlas()
@@ -155,8 +149,9 @@ void Game::LoadTextureAtlas()
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	extern Camera Utility::camera;
-	Utility::camera.mouse_callback(window, xpos, ypos);
+	Game* game = static_cast<Game*>(glfwGetWindowUserPointer(window));
+	
+	game->GetPlayerReference()->GetCameraReference().mouse_callback(window, xpos, ypos);
 }
 
 void ResizeWindowCallback(GLFWwindow* window, int width, int height)

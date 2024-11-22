@@ -17,16 +17,6 @@ namespace Physics {
 		}
 	};
 
-	class Raycast {
-
-	public:
-		Raycast(class Minecraft::World* worldContext);
-
-		void ShootRay(RayHit& ray, glm::vec3 start, glm::vec3 direction, float stepAmount);
-
-	private:
-		class Minecraft::World* worldContext;
-
-	};
+	void ShootRay(class Minecraft::World* worldContext, RayHit& ray, glm::vec3 start, glm::vec3 direction, float stepAmount);
 
 }

@@ -27,7 +27,5 @@ public:
 };
 
 namespace Utility {
-
-	extern Camera camera;
-
+	inline glm::mat4 perspective = glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 10000.0f);
 }

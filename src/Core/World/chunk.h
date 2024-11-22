@@ -16,6 +16,7 @@
 #include <atomic>
 
 #include <queue>
+#include <deque>
 #include <tuple>
 
 namespace Minecraft {
@@ -44,7 +45,7 @@ namespace Minecraft {
 
 		std::vector<BlockData> blocks;
 
-		std::queue<LightNode> lightQueue;
+		std::deque<LightNode> lightQueue;
 		std::queue<LightNode> lightRemovalQueue;
 
 		bool SetupRenderFlag = false;

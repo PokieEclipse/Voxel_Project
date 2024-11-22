@@ -1,16 +1,12 @@
 #include "Physics.h"
 
-Physics::Raycast::Raycast(Minecraft::World* worldContext) : worldContext(worldContext)
-{
-}
 
-void Physics::Raycast::ShootRay(Physics::RayHit& ray, glm::vec3 start, glm::vec3 direction, float stepAmount)
+void Physics::ShootRay(Minecraft::World* worldContext, RayHit& ray, glm::vec3 start, glm::vec3 direction, float stepAmount)
 {
 	for (float i = 0; i < stepAmount; i += 0.01)
 	{
 		glm::vec3 rayPos = start + (float)i * glm::normalize(direction);
 
-		// Floor the position values to get the correct block coordinates
 		glm::ivec3 blockPos(round(rayPos.x), round(rayPos.y), round(rayPos.z));
 
 		if (worldContext->BlockExistsAt(blockPos)) {
@@ -19,8 +15,7 @@ void Physics::Raycast::ShootRay(Physics::RayHit& ray, glm::vec3 start, glm::vec3
 			ray.hitBlockPos = blockPos;
 
 
-			// Start with a large distance and hit normal (initially none)
-			float minDist = FLT_MAX;  // Start with the maximum float value
+			float minDist = FLT_MAX;
 			glm::ivec3 hitNormal(0);
 
 			// Compare distances for each face of the block
@@ -74,5 +69,4 @@ void Physics::Raycast::ShootRay(Physics::RayHit& ray, glm::vec3 start, glm::vec3
 	}
 
 	ray.hit = false;
-	
 }

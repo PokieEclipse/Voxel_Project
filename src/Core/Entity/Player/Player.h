@@ -8,7 +8,6 @@
 
 #include <vector>
 
-extern Camera Utility::camera;
 
 namespace Minecraft {
 
@@ -22,8 +21,6 @@ namespace Minecraft {
 
 		Player(class World* world);
 
-		Camera& camera = Utility::camera;
-
 		void PlaceBlock();
 		void BreakBlock();
 
@@ -31,8 +28,9 @@ namespace Minecraft {
 
 		void UpdatePlayer();
 
-
 		void Input();
+
+		Camera& GetCameraReference() { return camera; }
 
 		glm::vec3 playerPosition = glm::vec3(0.0f, 65.0f, 0.0f);
 
@@ -49,6 +47,7 @@ namespace Minecraft {
 		bool pressed = false;
 		bool leftPressed = false;
 
+		Camera camera;
 	};
 }
 

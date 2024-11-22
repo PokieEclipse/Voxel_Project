@@ -5,6 +5,7 @@
 #include "glm/gtc/type_ptr.hpp"
 
 #include "Utility/Camera.h"
+#include "Core/Entity/Player/Player.h"
 
 #include "FastNoiseLite.h"
 
@@ -13,11 +14,8 @@
 
 #include <algorithm>
 
+#include <unordered_set>
 #include "Utility/Debug.h"
-
-extern Camera Utility::camera;
-extern glm::mat4 Utility::perspective;
-
 
 Minecraft::Chunk::Chunk(Game* game, World* world, glm::vec3 chunkPos) : game(game), _world(world), blocks(World::CHUNK_SIZE * World::CHUNK_SIZE * World::CHUNK_HEIGHT), chunkPosition(chunkPos)
 {
@@ -44,20 +42,20 @@ void Minecraft::Chunk::GenerateChunk(int posX, int posY, int posZ)
 {	
 	ChunkGuard guard(this);
 
-	FastNoiseLite noise;
-	noise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
-	noise.SetFrequency(0.03f);
-	noise.SetFractalOctaves(5.0f);
-	noise.SetFractalLacunarity(2.0f);
-	noise.SetFractalGain(0.5f);
-	noise.SetFractalType(FastNoiseLite::FractalType_FBm);
+	//FastNoiseLite noise;
+	//noise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+	//noise.SetFrequency(0.03f);
+	//noise.SetFractalOctaves(5.0f);
+	//noise.SetFractalLacunarity(2.0f);
+	//noise.SetFractalGain(0.5f);
+	//noise.SetFractalType(FastNoiseLite::FractalType_FBm);
 
 	for (int x = 0; x < Minecraft::World::CHUNK_SIZE; x++)
 	{
 		for (int z = 0; z < Minecraft::World::CHUNK_SIZE; z++)
 		{
-			float height = 60.0f + noise.GetNoise((float)x + posX - 1, (float)z + posZ) * 20.0f;
-
+			//float height = 60.0f + noise.GetNoise((float)x + posX - 1, (float)z + posZ) * 20.0f;
+			
 			int nx = x; int nz = z;
 			if (chunkPosition.x < 0)
 			{
@@ -68,18 +66,20 @@ void Minecraft::Chunk::GenerateChunk(int posX, int posY, int posZ)
 				nz = abs(z - World::CHUNK_SIZE - 1);
 			}
 
+			int t = sin(((x + chunkPosition.x * World::CHUNK_SIZE) * 0.1f) * 10.0f) + (sin((z + chunkPosition.z * World::CHUNK_SIZE) * 0.1f) * 10.0f);
+
 			for (int y = 0; y < Minecraft::World::CHUNK_HEIGHT; y++)
 			{
 				BlockData block;
 
-				if (y < 50 + (sin((x + chunkPosition.x * World::CHUNK_SIZE) * 0.1f) * 10.0f) + (sin((z + chunkPosition.z * World::CHUNK_SIZE) * 0.1f) * 10.0f))
+				if (y < 50 + t)
 				{
 					block.blockType = BlockType::Grass;
 				}
 
-				chunkLock.lock();
+				//chunkLock.lock();
 				blocks[GetIndex(x, y, z)] = block;
-				chunkLock.unlock();
+				//chunkLock.unlock();
 			}
 		}
 	}
@@ -144,6 +144,7 @@ float Minecraft::Chunk::CalculateAO(bool side1, bool side2, bool corner, bool ca
 
 void Minecraft::Chunk::SetupVertices(World* world)
 {
+	
 	ChunkGuard guard(this);
 
 	chunkLock.lock();
@@ -482,6 +483,7 @@ void Minecraft::Chunk::SetupVertices(World* world)
 		}
 
 	}
+	
 
 	SetupRenderFlag = true;
 	indiceSize = indices.size();
@@ -579,23 +581,9 @@ void Minecraft::Chunk::SetBlockPropagate(glm::ivec3 pos)
 		};
 
 	chunkLock.lock();
-	lightQueue.push(GetIndex(Wrap(pos.x % World::CHUNK_SIZE, World::CHUNK_SIZE), pos.y, Wrap(pos.z % World::CHUNK_SIZE, World::CHUNK_SIZE)));
-
-	//int index = GetIndex(Wrap(pos.x % World::CHUNK_SIZE, World::CHUNK_SIZE), pos.y, Wrap(pos.z % World::CHUNK_SIZE, World::CHUNK_SIZE));
-	//std::cout << "Positions:\n" << pos.x << ", " << pos.y << ", " << pos.z << std::endl;
-	//std::cout << "Index:\n" << index << std::endl;
-	//
-	//int x_local = index % World::CHUNK_SIZE;
-	//int y_local = (index / (World::CHUNK_SIZE * World::CHUNK_SIZE));
-	//int z_local = (index / World::CHUNK_SIZE) % World::CHUNK_SIZE;
-	//
-	//// Convert to world positions
-	//int x_world = x_local + World::CHUNK_SIZE * chunkPosition.x;
-	//int y_world = y_local + World::CHUNK_SIZE * chunkPosition.y;
-	//int z_world = z_local + World::CHUNK_SIZE * chunkPosition.z;
-	//
-	//std::cout << "Positions in index:\n" << x_world << ", " << y_local << ", " << z_world << std::endl;
+	lightQueue.emplace_back(GetIndex(Wrap(pos.x % World::CHUNK_SIZE, World::CHUNK_SIZE), pos.y, Wrap(pos.z % World::CHUNK_SIZE, World::CHUNK_SIZE)));
 	chunkLock.unlock();
+	
 }
 
 void Minecraft::Chunk::PropagateLighting(World* world)
@@ -605,14 +593,13 @@ void Minecraft::Chunk::PropagateLighting(World* world)
 	if (!ChunkReadyLighting)
 		return;
 
-	std::vector<Chunk*> chunksToPropagate;
+	std::unordered_set<Chunk*> chunksToPropagate;
 
 	const int directions[6][3] = { {1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1} };
 
 	while (!lightQueue.empty())
 	{
-		LightNode light = lightQueue.front();
-		lightQueue.pop();
+		LightNode& light = lightQueue.front();
 
 		int x_local = light.index % World::CHUNK_SIZE;
 		int y_local = (light.index / (World::CHUNK_SIZE * World::CHUNK_SIZE));
@@ -625,6 +612,7 @@ void Minecraft::Chunk::PropagateLighting(World* world)
 		BlockData* block = GetBlockAt(x_world, y_world, z_world);
 		if (!block)
 		{
+			lightQueue.pop_front();
 			continue;
 		}
 
@@ -645,13 +633,15 @@ void Minecraft::Chunk::PropagateLighting(World* world)
 					neighborChunk->SetBlockPropagate(glm::ivec3(nx, ny, nz));
 				}
 
-				if (std::find(chunksToPropagate.begin(), chunksToPropagate.end(), neighborChunk) == chunksToPropagate.end())
+				if (neighborChunk)
 				{
-					chunksToPropagate.push_back(neighborChunk);
+					chunksToPropagate.insert(neighborChunk);
 				}
 			}
 
 		}
+
+		lightQueue.pop_front();
 	}
 
 	// Propagate the neighbor chunks in the vector
@@ -816,7 +806,7 @@ void Minecraft::Chunk::RenderVoxels()
 	_world->shader.Bind();
 
 	glUniformMatrix4fv(glGetUniformLocation(_world->shader.GetID(), "modelMatrix"), 1, GL_FALSE, glm::value_ptr(chunkMatrix));
-	glUniformMatrix4fv(glGetUniformLocation(_world->shader.GetID(), "viewMatrix"), 1, GL_FALSE, glm::value_ptr(Utility::camera.viewSpace));
+	glUniformMatrix4fv(glGetUniformLocation(_world->shader.GetID(), "viewMatrix"), 1, GL_FALSE, glm::value_ptr(game->GetPlayerReference()->GetCameraReference().viewSpace));
 	glUniformMatrix4fv(glGetUniformLocation(_world->shader.GetID(), "perspectiveMatrix"), 1, GL_FALSE, glm::value_ptr(Utility::perspective));
 
 	glActiveTexture(GL_TEXTURE0);

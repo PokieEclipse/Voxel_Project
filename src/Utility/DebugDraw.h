@@ -8,6 +8,11 @@
 
 #include "Shader.h"
 
+namespace Minecraft {
+	class World;
+	class Player;
+}
+
 namespace Utility {
 	
 	class DebugDrawer {
@@ -19,13 +24,18 @@ namespace Utility {
 
 	class WireframeCube : DebugDrawer {
 	public:
-		WireframeCube(glm::vec3 cubePosition);
+		WireframeCube(glm::vec3 cubePosition, class Minecraft::World* worldContext);
 		~WireframeCube();
 
+
+		void Render();
+
+	private:
 		glm::vec3 cubePosition;
 		Shader wireframeCubeShader;
 
-		void Render();
+		class Minecraft::World* worldContext;
+
 	};
 
 }

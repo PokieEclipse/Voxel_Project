@@ -7,10 +7,12 @@
 
 #include <glfw/glfw3.h>
 
-extern Camera Utility::camera;
-//extern glm::mat4 Utility::perspective;
+#include "Core/game.h"
+#include "Core/World/world.h"
+#include "Core/Entity/Player/Player.h"
 
-Utility::WireframeCube::WireframeCube(glm::vec3 cubePosition) : cubePosition(cubePosition)
+
+Utility::WireframeCube::WireframeCube(glm::vec3 cubePosition, Minecraft::World* world) : cubePosition(cubePosition), worldContext(world)
 {
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -68,8 +70,8 @@ void Utility::WireframeCube::Render()
 	wireframeCubeShader.Bind();
 
     glUniformMatrix4fv(glGetUniformLocation(wireframeCubeShader.GetID(), "modelMatrix"), 1, GL_FALSE, glm::value_ptr(identity));
-    glUniformMatrix4fv(glGetUniformLocation(wireframeCubeShader.GetID(), "viewMatrix"), 1, GL_FALSE, glm::value_ptr(Utility::camera.viewSpace));
-    glUniformMatrix4fv(glGetUniformLocation(wireframeCubeShader.GetID(), "perspectiveMatrix"), 1, GL_FALSE, glm::value_ptr(glm::perspective(glm::radians(45.0f), (float)1920 / (float)1080, 0.1f, 10000.0f)));
+    glUniformMatrix4fv(glGetUniformLocation(wireframeCubeShader.GetID(), "viewMatrix"), 1, GL_FALSE, glm::value_ptr(worldContext->game->GetPlayerReference()->GetCameraReference().viewSpace));
+    glUniformMatrix4fv(glGetUniformLocation(wireframeCubeShader.GetID(), "perspectiveMatrix"), 1, GL_FALSE, glm::value_ptr(perspective));
 
     float timeVar = glfwGetTime();
     //std::cout << timeVar << std::endl;

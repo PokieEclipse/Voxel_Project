@@ -25,9 +25,7 @@ void Minecraft::Player::PlaceBlock()
 
 	Physics::RayHit ray;
 
-	Physics::Raycast raycast(world);
-
-	raycast.ShootRay(ray, pos, camera.cameraForwardVector, BreakDistance);
+	ShootRay(world, ray, pos, camera.cameraForwardVector, BreakDistance);
 
 	if (ray && ray.adjacentBlock)
 	{
@@ -41,9 +39,7 @@ void Minecraft::Player::BreakBlock()
 
 	Physics::RayHit ray;
 
-	Physics::Raycast raycast(world);
-
-	raycast.ShootRay(ray, pos, camera.cameraForwardVector, BreakDistance);
+	ShootRay(world, ray, pos, camera.cameraForwardVector, BreakDistance);
 
 	if (ray)
 	{
@@ -58,9 +54,7 @@ void Minecraft::Player::RedoVoxels()
 
 	Physics::RayHit ray;
 
-	Physics::Raycast raycast(world);
-
-	raycast.ShootRay(ray, pos, camera.cameraForwardVector, BreakDistance);
+	ShootRay(world, ray, pos, camera.cameraForwardVector, BreakDistance);
 
 	if (ray)
 	{
@@ -70,19 +64,11 @@ void Minecraft::Player::RedoVoxels()
 
 void Minecraft::Player::UpdatePlayer()
 {
-	//bool t = false;
-	//ImGui::Begin("My First Tool", &t, ImGuiWindowFlags_MenuBar);
-	//ImGui::Text("Hello, world %d", 123);
-	//if (ImGui::Button("Save"))
-	//	std::cout << "save" << std::endl;
-	//ImGui::InputText("string", buf, IM_ARRAYSIZE(buf));
-	//ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-
 	crosshair.RenderCrosshair();
 
 	Input();
 
-	Utility::camera.cameraPosition = playerPosition;
+	camera.cameraPosition = playerPosition;
 
 	playerChunkPosition = glm::vec3(floor((float)playerPosition.x / world->CHUNK_SIZE), floor((float)playerPosition.y / world->CHUNK_SIZE), floor((float)playerPosition.z / world->CHUNK_SIZE));
 
@@ -101,13 +87,11 @@ void Minecraft::Player::UpdatePlayer()
 
 	Physics::RayHit ray;
 	
-	Physics::Raycast raycast(world);
-	
-	raycast.ShootRay(ray, camera.cameraPosition, camera.cameraForwardVector, BreakDistance);
+	Physics::ShootRay(world, ray, camera.cameraPosition, camera.cameraForwardVector, BreakDistance);
 	
 	if (ray)
 	{
-		Utility::WireframeCube wCube(ray.hitBlockPos);
+		Utility::WireframeCube wCube(ray.hitBlockPos, world);
 	
 		wCube.Render();
 	}
@@ -115,7 +99,7 @@ void Minecraft::Player::UpdatePlayer()
 
 void Minecraft::Player::Input()
 {
-	float CameraSpeed = 0.05f;
+	float CameraSpeed = 0.5f;
 
 	if (glfwGetKey(world->game->GetGameWindow(), GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
@@ -131,19 +115,19 @@ void Minecraft::Player::Input()
 	}
 	if (glfwGetKey(world->game->GetGameWindow(), GLFW_KEY_W) == GLFW_PRESS)
 	{
-		playerPosition += CameraSpeed * Utility::camera.cameraForwardVector;
+		playerPosition += CameraSpeed * camera.cameraForwardVector;
 	}
 	if (glfwGetKey(world->game->GetGameWindow(), GLFW_KEY_S) == GLFW_PRESS)
 	{
-		playerPosition -= CameraSpeed * Utility::camera.cameraForwardVector;
+		playerPosition -= CameraSpeed * camera.cameraForwardVector;
 	}
 	if (glfwGetKey(world->game->GetGameWindow(), GLFW_KEY_A) == GLFW_PRESS)
 	{
-		playerPosition -= CameraSpeed * glm::cross(Utility::camera.cameraForwardVector, Utility::camera.cameraUpVector);
+		playerPosition -= CameraSpeed * glm::cross(camera.cameraForwardVector, camera.cameraUpVector);
 	}
 	if (glfwGetKey(world->game->GetGameWindow(), GLFW_KEY_D) == GLFW_PRESS)
 	{
-		playerPosition += CameraSpeed * glm::cross(Utility::camera.cameraForwardVector, Utility::camera.cameraUpVector);
+		playerPosition += CameraSpeed * glm::cross(camera.cameraForwardVector, camera.cameraUpVector);
 	}
 
 	if (glfwGetMouseButton(world->game->GetGameWindow(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS && !leftPressed)

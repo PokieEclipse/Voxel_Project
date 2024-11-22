@@ -43,8 +43,8 @@ public:
 
 	unsigned int GetTextureAtlasID() const { return textureAtlasID; }
 
-	class Minecraft::Player* GetPlayerReference() const { return player; }
-	class Minecraft::World* GetWorldReference() const { return world; }
+	class Minecraft::Player* GetPlayerReference() { return player; }
+	class Minecraft::World* GetWorldReference() { return world; }
 
 	void ProcessInput(GLFWwindow* window);
 
